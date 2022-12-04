@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+.container *::-webkit-scrollbar {
+  width: 8px; /* 스크롤바의 너비 */
+}
+
+.container *::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #6d6d6d; /* 스크롤바의 색상 */
+  border-radius: 10px;
+}
+
+.container *::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, 0.1); /*스크롤바 뒷 배경 색상*/
+}
+
+[contenteditable="true"]:empty:before {
+  content: attr(placeholder);
+}

@@ -5,7 +5,15 @@ import React from "react";
 import axios from "axios";
 
 import Container from "react-bootstrap/Container";
-import { Button, Form, Image, InputGroup, ListGroup } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Image,
+  InputGroup,
+  ListGroup,
+  Offcanvas,
+  Spinner,
+} from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
@@ -85,15 +93,17 @@ function Analyzer() {
   const [blobinfo, setBlobInfo] = React.useState("");
   const [addoption, setAddOption] = React.useState("");
   const [addfigure, setAddFigure] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
 
   const reader = new FileReader();
 
   const fileUpload = () => {
+    setLoading(true);
     const formData = new FormData();
     formData.append("file", blobinfo);
     axios({
       method: "post",
-      url: `http://127.0.0.1:8000/uploadimg`,
+      url: "http://localhost:8000/uploadimg",
       data: formData,
       params: { type: choiceitem, rarity: choicerarity },
       headers: {
@@ -108,12 +118,14 @@ function Analyzer() {
         const optionlisttemp = responseToJson(e.data, choiceoptiontemp);
         setChoiceOptionList(choiceoptiontemp);
         setOptionList([...optionlisttemp]);
+        setLoading(false);
       })
       .catch(function (error) {
         if (error.response) {
           // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
           console.log(error.response.status);
           alert(error.response.status + " 오류가 발생했습니다");
+          setLoading(false);
         }
       });
   };
@@ -154,6 +166,18 @@ function Analyzer() {
       onPaste={handleOnPaste}
       style={{ paddingTop: 56, height: "100vh" }}
     >
+      <Offcanvas
+        className="bg-transparent position-absolute top-50 start-50 translate-middle"
+        show={loading}
+        backdrop="static"
+      >
+        <Spinner
+          className="m-auto text-light fs-1"
+          animation="border"
+          role="status"
+          style={{ width: "20rem", height: "20rem" }}
+        />
+      </Offcanvas>
       <Row className="h-100">
         {optionlist[0] ? (
           <Col xs={12} sm={12} lg={8}>

@@ -103,7 +103,7 @@ function Analyzer() {
     formData.append("file", blobinfo);
     axios({
       method: "post",
-      url: "http://localhost:8000/uploadimg",
+      url: "http://34.64.132.65:8000/uploadimg",
       data: formData,
       params: { type: choiceitem, rarity: choicerarity },
       headers: {

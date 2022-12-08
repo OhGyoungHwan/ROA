@@ -8,7 +8,6 @@ import Container from "react-bootstrap/Container";
 import {
   Button,
   Form,
-  Image,
   InputGroup,
   ListGroup,
   Offcanvas,
@@ -22,6 +21,8 @@ import Editabletable from "../component/Editableracttable.tsx";
 
 import maximumoption from "../maximumoption.json";
 import SelectBasic from "../component/Selectbasic";
+
+const listItemStyle = "bg-dark text-secondary fs-5 lh-lg";
 
 function findMaximumOptionList(choiceitem, choicerarity) {
   const choiceoptiontemp = maximumoption.filter(function (optionjson) {
@@ -115,15 +116,17 @@ function Analyzer() {
           choiceitem,
           choicerarity
         );
+        if (JSON.stringify(e.data) === "{}")
+          alert("옵션확인이 불가능한 사진입니다.");
         const optionlisttemp = responseToJson(e.data, choiceoptiontemp);
         setChoiceOptionList(choiceoptiontemp);
         setOptionList([...optionlisttemp]);
         setLoading(false);
+        setAddOption(Object.keys(choiceoptiontemp)[2]);
       })
       .catch(function (error) {
         if (error.response) {
           // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
-          console.log(error.response.status);
           alert(error.response.status + " 오류가 발생했습니다");
           setLoading(false);
         }
@@ -162,10 +165,11 @@ function Analyzer() {
 
   return (
     <Container
-      className="App "
+      className="App"
       onPaste={handleOnPaste}
-      style={{ paddingTop: 56, height: "100vh" }}
+      style={{ paddingTop: 56 }}
     >
+      {/* 로딩 컴포넌트 */}
       <Offcanvas
         className="bg-transparent position-absolute top-50 start-50 translate-middle"
         show={loading}
@@ -178,8 +182,9 @@ function Analyzer() {
           style={{ width: "20rem", height: "20rem" }}
         />
       </Offcanvas>
-      <Row className="h-100">
+      <Row>
         {optionlist[0] ? (
+          // 옵션 확인 후 컴포넌트
           <Col xs={12} sm={12} lg={8}>
             <Row>
               <Col xs={12}>
@@ -224,31 +229,50 @@ function Analyzer() {
             </Row>
           </Col>
         ) : (
+          // 옵션 확인 전 컴포넌트
           <Col xs={12} sm={12} lg={8}>
-            <ListGroup className="mt-2">
+            <ListGroup className="mt-2 h-100 ">
               <ListGroup.Item className="bg-dark text-white">
                 <p className="fs-1">어떻게 할까?</p>
+                <p className="text-secondary">
+                  본사이트는 PC에 최적화 되어있습니다.
+                </p>
               </ListGroup.Item>
-              <ListGroup.Item className="bg-dark text-white">
-                <Image
-                  src={`${process.env.PUBLIC_URL}/설명.png`}
-                  alt="설명.png"
-                />
+              <ListGroup.Item className={listItemStyle}>
+                1 레저렉션에서 궁금한 아이템의 옵션부분을{" "}
+                <strong className="text-white">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-windows"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.555 1.375 0 2.237v5.45h6.555V1.375zM0 13.795l6.555.933V8.313H0v5.482zm7.278-5.4.026 6.378L16 16V8.395H7.278zM16 0 7.33 1.244v6.414H16V0z" />
+                  </svg>
+                  +Shift+S 로 캡쳐
+                </strong>
+                합니다.
+                <br />
+                ※아이템의 <strong className="text-white">
+                  옵션 부분만
+                </strong>{" "}
+                캡쳐해야 인식률이 좋습니다.※
+                <br />
+                ※이미 아이템 사진을 가지고 있다면 바로 업로드 합니다.※
               </ListGroup.Item>
-              <ListGroup.Item className="bg-dark text-secondary">
-                1 레저렉션에서 옵션이 궁금한 아이템의 옵션을{" "}
-                <strong className="text-white">캡쳐</strong>합니다.
+              <ListGroup.Item className={listItemStyle}>
+                2 캡쳐된 사진을{" "}
+                <strong className="text-white">Ctrl+V 로 붙여넣기</strong>
+                합니다.
               </ListGroup.Item>
-              <ListGroup.Item className="bg-dark text-secondary">
-                2 옵션 사진을 <strong className="text-white">업로드</strong>{" "}
-                혹은 <strong className="text-white">붙여넣기</strong>합니다.
-              </ListGroup.Item>
-              <ListGroup.Item className="bg-dark text-secondary">
+              <ListGroup.Item className={listItemStyle}>
                 3 <strong className="text-white">아이템종류 희귀도</strong>를
                 선택 후 <strong className="text-white">확인하기</strong> 버튼을
                 클릭합니다.
               </ListGroup.Item>
-              <ListGroup.Item className="bg-dark text-secondary">
+              <ListGroup.Item className={listItemStyle}>
                 4 잠시 후 나온 결과를 확인하고{" "}
                 <strong className="text-white">옵션</strong>을{" "}
                 <strong className="text-white">추가</strong>하거나{" "}
@@ -259,7 +283,7 @@ function Analyzer() {
           </Col>
         )}
 
-        {/* 이미지 업로드 공간 ctrl + v 를 이용해 클립보드에 복사된 내용을 업로드 가능 */}
+        {/* 이미지 업로드 공간 */}
         <Col xs={12} sm={12} lg={4}>
           <Imageuploder
             reader={reader}

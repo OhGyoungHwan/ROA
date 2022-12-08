@@ -19,13 +19,26 @@ function Tableaccordion({ optionjson }) {
         </Col>
       </Row>
       <Row className="justify-content-center mt-2">
-        <Col xs={10} className="overflow-auto" style={{ height: "80vh" }}>
-          <Table hover className="table-sm align-middle" variant="dark">
+        <Col xs={10} className="overflow-auto">
+          <Table
+            hover
+            className="table-sm align-middle text-center"
+            variant="dark"
+            style={{ fontSize: "0.8rem" }}
+          >
             <thead>
               <tr>
                 <th>접두접미</th>
-                <th className="table-warning">레어/최대수치(접두/접미/겹침)</th>
-                <th className="table-primary">매직/최대수치(접두/접미/겹침)</th>
+                <th className="table-warning">
+                  레어/최대수치
+                  <br />
+                  (접두/접미/겹침)
+                </th>
+                <th className="table-primary">
+                  매직/최대수치
+                  <br />
+                  (접두/접미/겹침)
+                </th>
               </tr>
             </thead>
             <tbody>

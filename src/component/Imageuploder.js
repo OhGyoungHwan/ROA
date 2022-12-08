@@ -71,53 +71,56 @@ function Imageuploder({
   };
 
   return (
-    <Row className="justify-content-center h-100">
-      <Col>
-        <Row
-          className="h-75
-           my-2"
-        >
-          <input
-            ref={fileRef}
-            id="file"
-            type="file"
-            hidden
-            onChange={handleFileOnChange}
-          ></input>
-          {imginfo ? (
-            <Col
-              onClick={handleFileButtonClick}
-              style={{ cursor: "pointer" }}
-              className="h-100 d-flex align-items-center justify-content-center shadow p-0 overflow-hidden bg-dark"
-            >
-              <Image src={imginfo} alt="preview-img" className="w-100" />
-            </Col>
-          ) : (
-            <Col className="h-100 d-flex align-items-center justify-content-center shadow p-0  bg-dark rounded">
-              <div className="my-auto">
-                <Button onClick={handleFileButtonClick} className="btn-lg">
-                  이미지 업로드
-                </Button>
-                <p className="text-white">또는 붙여넣기</p>
-              </div>
-            </Col>
-          )}
-        </Row>
-        <Row className="my-2 ">
-          <Col>
-            <SelectBasic basiclist={itemlist} basicchoice={setChoiceItem} />
+    <Col>
+      <Row className="mt-2">
+        <input
+          ref={fileRef}
+          id="file"
+          type="file"
+          hidden
+          onChange={handleFileOnChange}
+        ></input>
+        {imginfo ? (
+          <Col
+            onClick={handleFileButtonClick}
+            style={{ cursor: "pointer" }}
+            className="d-flex align-items-center justify-content-center shadow p-0 overflow-hidden bg-dark"
+          >
+            <Image
+              src={imginfo}
+              alt="preview-img"
+              className="w-100"
+              style={{ height: "75vh" }}
+            />
           </Col>
-          <Col>
-            <SelectBasic basiclist={raritylist} basicchoice={setChoiceRarity} />
+        ) : (
+          <Col
+            style={{ height: "70vh" }}
+            className="d-flex align-items-center justify-content-center shadow p-0  bg-dark rounded"
+          >
+            <div className="my-auto">
+              <Button onClick={handleFileButtonClick} className="btn-lg">
+                이미지 업로드
+              </Button>
+              <p className="text-white">또는 붙여넣기</p>
+            </div>
           </Col>
-          <Col>
-            <Button onClick={fileupload} variant="dark">
-              확인하기
-            </Button>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+        )}
+      </Row>
+      <Row className="my-2">
+        <Col>
+          <SelectBasic basiclist={itemlist} basicchoice={setChoiceItem} />
+        </Col>
+        <Col>
+          <SelectBasic basiclist={raritylist} basicchoice={setChoiceRarity} />
+        </Col>
+        <Col>
+          <Button onClick={fileupload} variant="dark">
+            확인하기
+          </Button>
+        </Col>
+      </Row>
+    </Col>
   );
 }
 

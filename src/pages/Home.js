@@ -4,6 +4,8 @@ import React from "react";
 
 import axios from "axios";
 
+import imageCompression from "browser-image-compression";
+
 import Container from "react-bootstrap/Container";
 import {
   Button,
@@ -18,83 +20,48 @@ import Col from "react-bootstrap/Col";
 
 import Imageuploder from "../component/Imageuploder";
 import Editabletable from "../component/Editableracttable.tsx";
-
-import maximumoption from "../maximumoption.json";
 import SelectBasic from "../component/Selectbasic";
 
 const listItemStyle = "bg-dark text-secondary fs-5 lh-lg";
 
-function findMaximumOptionList(choiceitem, choicerarity) {
-  const choiceoptiontemp = maximumoption.filter(function (optionjson) {
-    return optionjson.종류 === choiceitem && optionjson.희귀도 === choicerarity;
-  })[0];
-
-  return choiceoptiontemp;
-}
-
-function responseToJson(data, choiceoptiontemp) {
-  const optionlist = Object.keys(data).map((value, idx) => {
-    return {
-      접두접미: value,
-      현재수치: data[value],
-      최대수치: choiceoptiontemp[value],
-    };
-  });
-  return refineOption(optionlist, choiceoptiontemp);
-}
-
-function refineOption(optionlist, choiceoptionlist) {
-  let allresist = 0;
-  let resistidx = [];
-  let resistmin = 100;
-  for (const idx in optionlist) {
-    if (
-      optionlist[idx].접두접미.includes("타격시") ||
-      optionlist[idx].접두접미.includes("피격시") ||
-      optionlist[idx].접두접미.includes("공격시") ||
-      optionlist[idx].접두접미.startsWith("레벨")
-    )
-      optionlist[idx].최대수치 = "스킬옵션";
-    else if (optionlist[idx].접두접미.includes("캐릭터레벨"))
-      optionlist[idx].최대수치 = "항상으뜸";
-    else if (optionlist[idx].접두접미.endsWith("저항")) {
-      if (resistmin > +optionlist[idx].현재수치) {
-        resistmin = +optionlist[idx].현재수치;
-      }
-      allresist = allresist + 1;
-      resistidx.push(idx);
-    }
-  }
-  if (allresist === 4) {
-    resistidx = resistidx.reverse();
-    for (const idx of resistidx) {
-      if (+optionlist[idx].현재수치 - resistmin === 0) {
-        optionlist.splice(idx, 1);
-      } else optionlist[idx].현재수치 = +optionlist[idx].현재수치 - resistmin;
-    }
-    optionlist.push({
-      접두접미: "모든저항",
-      현재수치: resistmin,
-      최대수치: choiceoptionlist["모든저항"],
-    });
-  }
-  return optionlist;
-}
-
-function Analyzer() {
+function Home({
+  findMaximumOptionList,
+  refineOption,
+  responseToJson,
+  compressionOptions,
+  itemlist,
+  maximumoption,
+  optionToText,
+}) {
   const [choiceitem, setChoiceItem] = React.useState("주얼");
   const [choicerarity, setChoiceRarity] = React.useState("매직");
   const [optionlist, setOptionList] = React.useState([]);
-  const [choiceoptionlist, setChoiceOptionList] = React.useState({
-    종류: "",
-    희귀도: "",
-    옵션: "",
-  });
+  const [raritylist, setRarityList] = React.useState(
+    maximumoption.filter((e) => e.종류 === choiceitem).map((obj) => obj.희귀도)
+  );
   const [imginfo, setImgInfo] = React.useState("");
   const [blobinfo, setBlobInfo] = React.useState("");
   const [addoption, setAddOption] = React.useState("");
   const [addfigure, setAddFigure] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
+  const [choiceoptionlist, setChoiceOptionList] = React.useState({
+    종류: "",
+    희귀도: "",
+    옵션: "",
+  });
+  const [optiontext, setOptionText] = React.useState("");
+
+  React.useEffect(() => {
+    const raritylisttemp = maximumoption
+      .filter((e) => e.종류 === choiceitem)
+      .map((obj) => obj.희귀도);
+    setRarityList([...raritylisttemp]);
+    setChoiceRarity(raritylisttemp[0]);
+  }, [choiceitem, maximumoption]);
+
+  React.useEffect(() => {
+    setOptionText(optionToText(optionlist, choiceitem, choicerarity));
+  }, [optionlist]);
 
   const reader = new FileReader();
 
@@ -118,11 +85,15 @@ function Analyzer() {
         );
         if (JSON.stringify(e.data) === "{}")
           alert("옵션확인이 불가능한 사진입니다.");
-        const optionlisttemp = responseToJson(e.data, choiceoptiontemp);
+        const optionlisttemp = refineOption(
+          responseToJson(e.data, choiceoptiontemp),
+          choiceoptiontemp
+        );
         setChoiceOptionList(choiceoptiontemp);
         setOptionList([...optionlisttemp]);
         setLoading(false);
         setAddOption(Object.keys(choiceoptiontemp)[2]);
+        setOptionText(optionToText(optionlisttemp, choiceitem, choicerarity));
       })
       .catch(function (error) {
         if (error.response) {
@@ -138,8 +109,9 @@ function Analyzer() {
     const item = e.clipboardData.items[0];
     if (item.type.indexOf("image") === 0) {
       const blob = item.getAsFile();
-      setBlobInfo(blob);
-      reader.readAsDataURL(blob);
+      const compressedFile = await imageCompression(blob, compressionOptions);
+      setBlobInfo(compressedFile);
+      reader.readAsDataURL(compressedFile);
       reader.onload = () => {
         const text = `${reader.result}`;
         setImgInfo(text);
@@ -188,6 +160,25 @@ function Analyzer() {
           <Col xs={12} sm={12} lg={8}>
             <Row>
               <Col xs={12}>
+                <InputGroup className="mt-2">
+                  <InputGroup.Text
+                    id="inputGroup-sizing-default"
+                    className="bg-dark text-white shadow-none border-secondary rounded-0 border-1"
+                  >
+                    옵션텍스트
+                  </InputGroup.Text>
+                  <Form.Control
+                    className="bg-dark text-white border-secondary border-1 rounded-0 shadow-none"
+                    aria-label="Default"
+                    aria-describedby="inputGroup-sizing-default"
+                    value={optiontext}
+                    onChange={(e) => setOptionText(e.target.value)}
+                  />
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12}>
                 <Editabletable
                   optionlist={optionlist}
                   setOptionList={setOptionList}
@@ -197,6 +188,7 @@ function Analyzer() {
             <Row>
               <Col xs={4} sm={4}>
                 <SelectBasic
+                  name={choiceitem + choicerarity}
                   basiclist={Object.keys(choiceoptionlist).slice(2)}
                   basicchoice={setAddOption}
                 />
@@ -218,9 +210,6 @@ function Analyzer() {
                   variant="dark"
                   onClick={() => {
                     handleOnClick();
-                    // setOptionList((prevlist) =>
-                    //   refineOption([...prevlist], choiceoptionlist)
-                    // );
                   }}
                 >
                   옵션추가
@@ -277,7 +266,17 @@ function Analyzer() {
                 <strong className="text-white">옵션</strong>을{" "}
                 <strong className="text-white">추가</strong>하거나{" "}
                 <strong className="text-white">수치</strong>를{" "}
-                <strong className="text-white">변경</strong>하여 확인합니다.
+                <strong className="text-white">변경</strong>합니다.
+              </ListGroup.Item>
+              <ListGroup.Item className={listItemStyle}>
+                5 결과를 확인합니다.{" "}
+                <strong className="text-warning">노란글씨</strong>는
+                <strong className="text-white"> 괜찮은 옵션</strong>
+                입니다.{" "}
+              </ListGroup.Item>
+              <ListGroup.Item className={listItemStyle}>
+                6 <strong className="text-white">옵션텍스트</strong>를 통해 쉽게{" "}
+                <strong className="text-white">복사</strong>할 수 있습니다.{" "}
               </ListGroup.Item>
             </ListGroup>
           </Col>
@@ -288,11 +287,15 @@ function Analyzer() {
           <Imageuploder
             reader={reader}
             imginfo={imginfo}
+            choiceitem={choiceitem}
             setChoiceItem={setChoiceItem}
             setChoiceRarity={setChoiceRarity}
             fileupload={fileUpload}
             setBlobInfo={setBlobInfo}
             setImgInfo={setImgInfo}
+            compressionoptions={compressionOptions}
+            itemlist={itemlist}
+            raritylist={raritylist}
           />
         </Col>
       </Row>
@@ -300,4 +303,4 @@ function Analyzer() {
   );
 }
 
-export default Analyzer;
+export default Home;

@@ -2,68 +2,39 @@ import React from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
-import SelectBasic from "./Selectbasic";
 import { Button } from "react-bootstrap";
+
+import SelectBasic from "./Selectbasic";
+
+import imageCompression from "browser-image-compression";
 
 function Imageuploder({
   imginfo,
+  choiceitem,
   setChoiceItem,
   setChoiceRarity,
   fileupload,
   setBlobInfo,
   setImgInfo,
   reader,
+  compressionOptions,
+  itemlist,
+  raritylist,
 }) {
-  const itemlist = [
-    "주얼",
-    "작은부적",
-    "거대부적",
-    "단도",
-    "도검",
-    "도끼",
-    "곤봉",
-    "철퇴",
-    "망치",
-    "셉터",
-    "지팡이",
-    "원드",
-    "창",
-    "미늘창",
-    "손톱",
-    "오브",
-    "아마존창",
-    "투척단도",
-    "투척도끼",
-    "투창",
-    "활/쇠뇌",
-    "아마존활",
-    "서클릿",
-    "투구",
-    "갑옷",
-    "장갑",
-    "방패",
-    "허리띠",
-    "신발",
-    "바바투구",
-    "드루가죽",
-    "네크토템",
-    "팔라방패",
-    "반지",
-    "목걸이",
-  ];
-  const raritylist = ["매직", "레어"];
   const fileRef = React.useRef();
+
   const handleFileButtonClick = (e) => {
     e.preventDefault();
     fileRef.current.click();
   };
 
-  const handleFileOnChange = (event) => {
+  const handleFileOnChange = async (e) => {
     //파일 불러오기
-    event.preventDefault();
-    const blob = event.target.files[0];
-    setBlobInfo(blob);
-    reader.readAsDataURL(blob);
+    e.preventDefault();
+    const blob = e.target.files[0];
+    const compressedFile = await imageCompression(blob, compressionOptions);
+    setBlobInfo(compressedFile);
+    reader.readAsDataURL(compressedFile);
     reader.onloadend = () => {
       const text = `${reader.result}`;
       setImgInfo(text);
@@ -77,6 +48,7 @@ function Imageuploder({
           ref={fileRef}
           id="file"
           type="file"
+          accept="image/*"
           hidden
           onChange={handleFileOnChange}
         ></input>
@@ -109,10 +81,18 @@ function Imageuploder({
       </Row>
       <Row className="my-2">
         <Col>
-          <SelectBasic basiclist={itemlist} basicchoice={setChoiceItem} />
+          <SelectBasic
+            name={""}
+            basiclist={itemlist}
+            basicchoice={setChoiceItem}
+          />
         </Col>
         <Col>
-          <SelectBasic basiclist={raritylist} basicchoice={setChoiceRarity} />
+          <SelectBasic
+            name={choiceitem}
+            basiclist={raritylist}
+            basicchoice={setChoiceRarity}
+          />
         </Col>
         <Col>
           <Button onClick={fileupload} variant="dark">

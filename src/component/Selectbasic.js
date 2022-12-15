@@ -1,7 +1,7 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 
-function SelectBasic({ basiclist, basicchoice }) {
+function SelectBasic({ name, basiclist, basicchoice }) {
   return (
     <Form.Select
       aria-label="Item select"
@@ -11,7 +11,7 @@ function SelectBasic({ basiclist, basicchoice }) {
       className="shadow-none border-dark bg-dark text-white"
     >
       {basiclist.map((item, idx) => (
-        <option key={idx} value={item}>
+        <option key={name + idx} value={item}>
           {item}
         </option>
       ))}

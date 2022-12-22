@@ -71,7 +71,7 @@ function Home({
     formData.append("file", blobinfo);
     axios({
       method: "post",
-      url: "http://34.64.132.65:8000/uploadimg",
+      url: "api/uploadimg",
       data: formData,
       params: { type: choiceitem, rarity: choicerarity },
       headers: {

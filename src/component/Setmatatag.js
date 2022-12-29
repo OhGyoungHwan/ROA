@@ -8,12 +8,12 @@ const setMetaTags = ({
 }) => {
   //set title
   document
-    .querySelector('meta[property="title"]')
+    .querySelector('meta[name="title"]')
     .setAttribute("content", `${title}`);
 
   //set description
   document
-    .querySelector('meta[property="description"]')
+    .querySelector('meta[name="description"]')
     .setAttribute("content", description);
 
   //set title

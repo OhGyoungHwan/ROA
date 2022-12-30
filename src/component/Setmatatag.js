@@ -1,15 +1,17 @@
 const setMetaTags = ({
   title = "",
+  metatitle = "",
   description = "",
   ogtitle = "",
   ogdescription = "",
   ogimageUrl = "",
   link = "",
 }) => {
+  document.querySelector("title").setAttribute("content", `${title}`);
   //set title
   document
     .querySelector('meta[name="title"]')
-    .setAttribute("content", `${title}`);
+    .setAttribute("content", `${metatitle}`);
 
   //set description
   document

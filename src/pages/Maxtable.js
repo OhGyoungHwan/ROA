@@ -6,6 +6,7 @@ function Maxtable({ maximumoption, itemlist }) {
   React.useEffect(() => {
     setMetaTags({
       title: "최대옵션표",
+      metatitle: "최대옵션표",
       description: "레저렉션2 모든 종류 아이템 최대수치 표",
       ogtitle: "최대옵션표",
       ogdescription: "레저렉션2 모든 종류 아이템 최대수치 표",

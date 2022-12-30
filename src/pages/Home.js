@@ -21,6 +21,7 @@ import Col from "react-bootstrap/Col";
 import Imageuploder from "../component/Imageuploder";
 import Editabletable from "../component/Editableracttable.tsx";
 import SelectBasic from "../component/Selectbasic";
+import setMetaTags from "../component/Setmatatag";
 
 const listItemStyle = "bg-dark text-secondary fs-5 lh-lg";
 
@@ -50,6 +51,20 @@ function Home({
     옵션: "",
   });
   const [optiontext, setOptionText] = React.useState("");
+  React.useEffect(() => {
+    setMetaTags({
+      title: "ROA레저렉션옵션분석기",
+      metatitle: "ROA레저렉션옵션분석기",
+      description:
+        "디아블로2 레저렉션캡쳐한번으로 분석하는 아이템옵션 한번에 보는 모든 옵션 최대 수치",
+      ogtitle: "ROA레저렉션옵션분석기",
+      ogdescription:
+        "디아블로2 레저렉션캡쳐한번으로 분석하는 아이템옵션 한번에 보는 모든 옵션 최대 수치",
+      ogimageUrl:
+        "https://lh3.googleusercontent.com/u/0/drive-viewer/AFDK6gPihBoTUzQa63KMiWiAfR0wXIjkKU8vFwiWMCJg8hTxgDDsP9HU7jCPjZPPNodZbSVCMdOLee_AZgyjzWpngkMB3x3e=w1920-h913",
+      link: "https://diablo2i2o.com",
+    });
+  }, []);
 
   React.useEffect(() => {
     const raritylisttemp = maximumoption
@@ -71,7 +86,7 @@ function Home({
     formData.append("file", blobinfo);
     axios({
       method: "post",
-      url: "api/uploadimg",
+      url: "http://localhost:8000/uploadimg",
       data: formData,
       params: { type: choiceitem, rarity: choicerarity },
       headers: {

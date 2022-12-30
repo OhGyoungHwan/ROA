@@ -9,7 +9,6 @@ import Maxtable from "./pages/Maxtable";
 import maximumoption from "./maximumoption.json";
 import availableoption from "./availableoption.json";
 import Home from "./pages/Home";
-import GoogleAdvertise from "./component/Adsense";
 
 const itemlist = [...new Set(maximumoption.map((obj) => obj.종류))];
 
@@ -147,7 +146,6 @@ function App() {
           }
         />
       </Routes>
-      <GoogleAdvertise />
     </>
   );
 }

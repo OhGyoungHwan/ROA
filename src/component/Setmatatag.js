@@ -7,7 +7,7 @@ const setMetaTags = ({
   ogimageUrl = "",
   link = "",
 }) => {
-  document.querySelector("title").setAttribute("content", `${title}`);
+  document.querySelector("title").innerHTML = title;
   //set title
   document
     .querySelector('meta[name="title"]')
